@@ -22,7 +22,7 @@ public class PhoneDTO {
     @NotEmpty
     @Size(min = 9,max = 13, message = "O número de telefone deve conter de 9 a 13 caracteres!")
     private String numero;
-    
+
     @Enumerated(EnumType.STRING)
     private PhoneType tipo;
 }

@@ -39,7 +39,7 @@ public class PersonController {
         return personService.Post(pessoa);
     }
 
-    @PutMapping(value = "/Person/Update/{id}")
+    @PutMapping("/Person/Update/{id}")
     public ResponseEntity<PersonDTO> Put(@PathVariable(value = "id") int id, @RequestBody @Valid PersonDTO newPessoa)
     {
         return personService.Put(id, newPessoa);

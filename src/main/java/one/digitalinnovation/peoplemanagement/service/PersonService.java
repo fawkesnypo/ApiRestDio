@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -31,12 +32,16 @@ public class PersonService {
 
         List<Person> personList = _personRepository.findAll()
                 .stream()
-                .filter(person -> person.getDataNascimento().getMonth() == cal.get(Calendar.MONTH))
+                .filter(person -> {
+                    List<String> list = List.of(person.getDataNascimento().split("-"));
+                    int m = Integer.parseInt(list.get(1).toString());
+                    return m == cal.get(Calendar.MONTH) + 1;
+                })
                 .toList();
 
         StringBuilder  retorno = new StringBuilder();
         retorno.append("Aniversariantes do mês:\n\n");
-        personList.forEach( person -> retorno.append(person.getNome()+" "+person.getDataNascimento().toString()));
+        personList.forEach( person -> retorno.append("\n"+person.getNome()+" "+person.getDataNascimento().toString()));
 
         return retorno.toString();
     }
@@ -64,16 +69,30 @@ public class PersonService {
 
     public PersonDTO Post(PersonDTO pessoa)
     {
-        _personRepository.save(personMapper.toModel(pessoa));
-        return pessoa;
+        return personMapper.toDTO(_personRepository.save(personMapper.toModel(pessoa)));
     }
 
     public ResponseEntity<PersonDTO> Put(int id, PersonDTO newPessoa)
     {
+        Person newPerson = personMapper.toModel(newPessoa);
         Optional<Person> oldPessoa = _personRepository.findById(id);
         if(oldPessoa.isPresent()){
+
             Person pessoa = oldPessoa.get();
-            pessoa.setNome(newPessoa.getNome());
+
+            if (newPessoa.getNome()!= null){
+                pessoa.setNome(newPerson.getNome());
+            }
+            if (newPessoa.getCpf()!= null){
+                pessoa.setCpf(newPerson.getCpf());
+            }
+            if (newPessoa.getDataNascimento()!= null){
+                pessoa.setDataNascimento(newPerson.getDataNascimento());
+            }
+            if (newPessoa.getPhones()!= null){
+                pessoa.setPhones(newPerson.getPhones());
+            }
+
             _personRepository.save(pessoa);
             return new ResponseEntity<PersonDTO>(personMapper.toDTO(pessoa), HttpStatus.OK);
         }

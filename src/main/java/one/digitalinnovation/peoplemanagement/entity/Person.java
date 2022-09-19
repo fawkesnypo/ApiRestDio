@@ -27,7 +27,7 @@ public class Person {
     private String cpf;
 
     @Column(nullable = false)
-    private Date dataNascimento;
+    private String dataNascimento;
 
     @OneToMany(fetch = FetchType.LAZY,cascade = {CascadeType.PERSIST,CascadeType.MERGE,CascadeType.REMOVE})
     private List<Phone> phones;
